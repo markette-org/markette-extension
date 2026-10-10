@@ -1,40 +1,67 @@
 name: Release
 
-# Push a tag vX.Y.Z (matching "version" in src/manifest.json) to attach the zip to a GitHub release
-# and, when the Chrome Web Store secrets are set, upload and publish it there.
-# Secrets (optional): CWS_EXTENSION_ID, CWS_CLIENT_ID, CWS_CLIENT_SECRET, CWS_REFRESH_TOKEN
-# (see https://developer.chrome.com/docs/webstore/using-api).
+# Publishes a new version automatically: when "version" in src/manifest.json changes on main (or on
+# a manual run), it tags v<version>, attaches the zip to a GitHub release, and uploads and publishes
+# it on the Chrome Web Store.
+# Chrome Web Store secrets (https://developer.chrome.com/docs/webstore/using-api):
+#   CWS_EXTENSION_ID   the item ID (from the developer dashboard, after the first manual upload)
+#   CWS_CLIENT_ID, CWS_CLIENT_SECRET, CWS_REFRESH_TOKEN   OAuth client for the Chrome Web Store API
+# Without them the GitHub release is still made and the store step is skipped with a warning.
 
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: [src/manifest.json]
+  workflow_dispatch:
+    inputs:
+      store_only:
+        description: Upload the current version to the Chrome Web Store even if its release exists
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: chrome-web-store
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Tag matches the manifest
-        run: |
-          version=$(node -p "require('./src/manifest.json').version")
-          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME does not match manifest version $version"
-            exit 1
-          fi
-      - run: node scripts/check.mjs
-      - id: pack
-        run: echo "zip=$(./scripts/pack.sh)" >> "$GITHUB_OUTPUT"
-      - name: GitHub release
+      - name: Version
+        id: version
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" "${{ steps.pack.outputs.zip }}" --title "$GITHUB_REF_NAME" --generate-notes
+        run: |
+          version=$(node -p "require('./src/manifest.json').version")
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Release v$version already exists." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check and pack
+        id: pack
+        if: steps.version.outputs.exists == 'false' || inputs.store_only
+        run: |
+          node scripts/check.mjs
+          echo "zip=$(./scripts/pack.sh)" >> "$GITHUB_OUTPUT"
+      - name: GitHub release
+        if: steps.version.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: gh release create "$TAG" "${{ steps.pack.outputs.zip }}" --target "$GITHUB_SHA" --title "$TAG" --generate-notes
       - name: Chrome Web Store
+        if: steps.version.outputs.exists == 'false' || inputs.store_only
         env:
           EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
           CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
@@ -43,8 +70,9 @@ jobs:
           ZIP: ${{ steps.pack.outputs.zip }}
         run: |
           if [ -z "$EXTENSION_ID" ] || [ -z "$CLIENT_ID" ] || [ -z "$CLIENT_SECRET" ] || [ -z "$REFRESH_TOKEN" ]; then
-            echo "::warning::Chrome Web Store upload skipped: set the CWS_* repository secrets."
+            echo "::warning::Chrome Web Store upload skipped: set the CWS_* secrets (see the comment at the top of release.yml)."
             exit 0
           fi
-          # Uploads and publishes; credentials come from the environment variables above.
+          # Uploads, then submits for review and publishes; credentials come from the environment.
           npx --yes chrome-webstore-upload-cli@3.5.0 --source "$ZIP"
+          echo "Uploaded $ZIP to the Chrome Web Store (published after Google's review)." >> "$GITHUB_STEP_SUMMARY"

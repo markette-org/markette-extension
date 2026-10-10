@@ -80,9 +80,14 @@ node scripts/check.mjs   # manifest and syntax checks (CI runs these)
 ./scripts/pack.sh        # dist/markette-extension-<version>.zip
 ```
 
-To release, bump `version` in `src/manifest.json` and push a `v<version>` tag. The
-[Release workflow](.github/workflows/release.yml) attaches the zip to a GitHub release. When the
-`CWS_*` secrets are set, it also uploads the zip to the Chrome Web Store and publishes it.
+To release, bump `version` in `src/manifest.json` and push to `main`. The
+[Release workflow](.github/workflows/release.yml) then tags `v<version>`, attaches the zip to a
+GitHub release, and uploads the new version to the Chrome Web Store and publishes it there, where it
+goes live after Google's review. The store step needs these secrets: `CWS_EXTENSION_ID`,
+`CWS_CLIENT_ID`, `CWS_CLIENT_SECRET` and `CWS_REFRESH_TOKEN` (see
+[Using the Chrome Web Store API](https://developer.chrome.com/docs/webstore/using-api)). The first
+upload has to be made by hand in the developer dashboard, which creates the item ID. A manual run
+with *store_only* re-uploads the current version.
 
 The extension uses the public REST API (`/api/workspaces/`, `/api/channels/`, `/api/providers/`,
 `/api/media/`, `/api/posts/`, `/api/posts/<id>/schedule/`). "Edit in Markette" opens
