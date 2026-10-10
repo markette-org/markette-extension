@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Markette extension settings</title>
+<link rel="stylesheet" href="ui.css">
+</head>
+<body class="options">
+<div class="page">
+  <header>
+    <img src="icons/icon-48.png" alt="" width="36" height="36">
+    <h1>Markette for Chrome</h1>
+  </header>
+
+  <section class="card">
+    <h2>Account</h2>
+    <div id="signed-in" hidden>
+      <p>Signed in to <strong id="who-server"></strong> as <strong id="who"></strong>.</p>
+      <div class="row">
+        <button id="signout" class="btn danger" type="button">Sign out</button>
+        <a id="open-app" class="btn ghost" href="#" target="_blank" rel="noopener">Open Markette</a>
+      </div>
+      <p class="muted small" id="token-note"></p>
+    </div>
+    <form id="signin-form" class="stack" hidden>
+      <label>Server<input id="server" type="text" autocomplete="url" spellcheck="false"></label>
+      <p class="muted small">The hosted service is <code>https://api.markette.org</code>. For your own installation, use the address you open Markette at.</p>
+      <div id="password-fields" class="stack">
+        <label>Email<input id="email" type="email" autocomplete="username"></label>
+        <label>Password<input id="password" type="password" autocomplete="current-password"></label>
+      </div>
+      <div id="token-fields" class="stack" hidden>
+        <label>API token<input id="token" type="password" placeholder="mkt_…" spellcheck="false"></label>
+        <p class="muted small">Create one in Markette → Settings → API &amp; MCP.</p>
+      </div>
+      <p id="signin-error" class="error" role="alert" hidden></p>
+      <div class="row">
+        <button id="signin-btn" class="btn primary" type="submit">Sign in</button>
+        <button id="toggle-token" class="btn link" type="button">Use an API token instead</button>
+      </div>
+      <p class="muted small">Your password is only used once, to create an API token for this browser (valid for a year, revocable in Markette → Settings → API &amp; MCP). The password is never stored.</p>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Web app address</h2>
+    <p class="muted small">Where “Edit in Markette” and “Open in Markette” go. Leave empty to use the server address (or app.markette.org for the hosted service).</p>
+    <form id="app-form" class="row">
+      <input id="app-url" type="url" placeholder="https://app.example.org" spellcheck="false" style="flex:1 1 260px">
+      <button class="btn ghost" type="submit">Save</button>
+      <span id="app-saved" class="ok small" hidden>Saved</span>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>How to share</h2>
+    <ul>
+      <li>Click the Markette button in the toolbar, or press <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> (change it at <code>chrome://extensions/shortcuts</code>).</li>
+      <li>Right-click a page, a selection, a link or an image and pick “Share … with Markette”.</li>
+      <li>Selected text is quoted in the post; the page address becomes the link.</li>
+    </ul>
+  </section>
+</div>
+<script type="module" src="options.js"></script>
+</body>
+</html>

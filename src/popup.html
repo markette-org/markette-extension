@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Markette</title>
+<link rel="stylesheet" href="ui.css">
+</head>
+<body class="popup">
+<header class="bar">
+  <img src="icons/icon-32.png" alt="" width="22" height="22">
+  <strong>Markette</strong>
+  <select id="workspace" aria-label="Workspace" hidden></select>
+  <button id="settings" class="icon-btn" type="button" title="Settings" aria-label="Settings">⚙</button>
+</header>
+
+<main>
+  <section id="loading" class="center muted">Loading…</section>
+
+  <section id="signin" hidden>
+    <h1>Sign in to Markette</h1>
+    <p class="muted small">Share pages, selections and images to your channels as drafts, scheduled posts or right away.</p>
+    <form id="signin-form" class="stack">
+      <label>Server<input id="server" type="text" autocomplete="url" spellcheck="false"></label>
+      <div id="password-fields" class="stack">
+        <label>Email<input id="email" type="email" autocomplete="username"></label>
+        <label>Password<input id="password" type="password" autocomplete="current-password"></label>
+      </div>
+      <div id="token-fields" class="stack" hidden>
+        <label>API token<input id="token" type="password" placeholder="mkt_…" spellcheck="false"></label>
+        <p class="muted small">Create one in Markette → Settings → API &amp; MCP.</p>
+      </div>
+      <p id="signin-error" class="error" role="alert" hidden></p>
+      <button id="signin-btn" class="btn primary" type="submit">Sign in</button>
+      <button id="toggle-token" class="btn link" type="button">Use an API token instead (single sign-on accounts)</button>
+    </form>
+    <p class="muted small">Your password is only used once, to create an API token for this browser. You can revoke it any time in Markette.</p>
+  </section>
+
+  <section id="compose" hidden>
+    <div id="notice" class="notice" hidden></div>
+    <label id="title-wrap" hidden>Title<input id="title" type="text" maxlength="300"></label>
+    <label class="grow">Text
+      <textarea id="body" rows="6" placeholder="What do you want to say?"></textarea>
+    </label>
+    <label>Link<input id="link" type="url" spellcheck="false" placeholder="https://"></label>
+
+    <div class="media-row">
+      <div id="media" class="media"></div>
+      <button id="screenshot" class="btn ghost sm" type="button">Add screenshot</button>
+    </div>
+
+    <div class="field-head"><span>Channels</span><button id="all-channels" class="btn link sm" type="button">Select all</button></div>
+    <div id="channels" class="chips" role="group" aria-label="Channels"></div>
+    <p id="no-channels" class="muted small" hidden>No channels in this workspace yet. <a id="connect-link" href="#" target="_blank" rel="noopener">Connect one in Markette</a>.</p>
+    <div id="counts" class="counts"></div>
+
+    <div class="when-row">
+      <label>When
+        <select id="when">
+          <option value="draft">Save as draft</option>
+          <option value="best_time">Best time</option>
+          <option value="queue">Next queue slot</option>
+          <option value="exact">At a time…</option>
+          <option value="now">Publish now</option>
+        </select>
+      </label>
+      <label id="at-wrap" hidden>Date and time<input id="at" type="datetime-local"></label>
+    </div>
+
+    <p id="error" class="error" role="alert" hidden></p>
+    <div class="actions">
+      <button id="open-app" class="btn ghost" type="button" title="Continue in the Markette composer">Edit in Markette</button>
+      <button id="submit" class="btn primary" type="button">Save draft</button>
+    </div>
+  </section>
+
+  <section id="done" hidden>
+    <div class="done-mark" aria-hidden="true">✓</div>
+    <h1 id="done-title">Saved</h1>
+    <p id="done-text" class="muted"></p>
+    <div class="actions">
+      <a id="done-link" class="btn ghost" href="#" target="_blank" rel="noopener">Open in Markette</a>
+      <button id="again" class="btn primary" type="button">Share something else</button>
+    </div>
+  </section>
+</main>
+<script type="module" src="popup.js"></script>
+</body>
+</html>

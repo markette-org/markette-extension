@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Markette",
+  "short_name": "Markette",
+  "version": "0.1.0",
+  "description": "Share the page, a selection, a link or an image to your social channels with Markette: draft, schedule or publish.",
+  "homepage_url": "https://markette.org",
+  "minimum_chrome_version": "116",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "Share with Markette",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "options_page": "options.html",
+  "permissions": ["activeTab", "contextMenus", "scripting", "storage"],
+  "host_permissions": ["https://api.markette.org/*"],
+  "optional_host_permissions": ["https://*/*", "http://*/*"],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Alt+Shift+M" },
+      "description": "Share the current page with Markette"
+    }
+  }
+}
