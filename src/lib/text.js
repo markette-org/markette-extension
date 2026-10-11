@@ -81,6 +81,7 @@ const META = {
   wordpress: ['WordPress', '#21759b', 'W'],
   drupal: ['Drupal', '#0678be', 'D'],
   medium: ['Medium', '#000000', 'M'],
+  devto: ['DEV', '#0A0A0A', 'DEV'],
   hugo: ['Hugo', '#ff4088', 'H'],
 };
 
