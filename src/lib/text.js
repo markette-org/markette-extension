@@ -73,6 +73,7 @@ const META = {
   threads: ['Threads', '#000000', '@'],
   youtube: ['YouTube', '#FF0000', '▶'],
   discord: ['Discord', '#5865F2', 'dc'],
+  slack: ['Slack', '#4A154B', '#'],
   ghost: ['Ghost', '#15171A', 'gh'],
   brevo: ['Brevo', '#0B996E', 'br'],
   listmonk: ['Listmonk', '#0055D4', 'lm'],
